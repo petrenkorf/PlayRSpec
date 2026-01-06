@@ -17,7 +17,7 @@ jobs:
 
       - name: Start container
         run: | 
-          docker create --name rbwasm-temp rbwasm-builder
+          docker create --name rbwasm-temp ruby-wasm-builder
 
       - name: Copy WASM file
         run: |
