@@ -14,3 +14,19 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ruby-wasm-builder .
+
+      - name: Start container
+        run: | 
+          docker create --name rbwasm-temp rbwasm-builder
+
+      - name: Copy WASM file
+        run: |
+          docker cp rbwasm-temp:/app/base.wasm .
+
+      - name: Remove container 
+        run: |
+          docker rm rbwasm-temp
+
+      - name: Check if build exists
+        run: | 
+          [ -f "./base.wasm" ] || { echo "Error: base.wasm not found"; exit 1; }
