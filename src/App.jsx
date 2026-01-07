@@ -2,6 +2,17 @@ import { useRef } from "react";
 import "./App.css";
 import { Editor } from "@monaco-editor/react";
 import "monaco-editor/esm/vs/editor/contrib/snippet/browser/snippetController2.js";
+import { DefaultRubyVM } from "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser/+esm";
+
+const wasm = await fetch(`${import.meta.env.BASE_URL}base.wasm`);
+const module = await WebAssembly.compileStreaming(wasm);
+const { vm } = await DefaultRubyVM(module);
+
+vm.eval(`
+  require "js"
+  # JS.global[:document].write "Hello, world!"
+  puts "Ruby WASM loaded"
+`);
 
 const defaultCode = `# Nothing to do here`;
 
