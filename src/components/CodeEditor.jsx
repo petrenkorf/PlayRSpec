@@ -98,14 +98,16 @@ const CodeEditor = () => {
         }}
         onMount={onMountTestEditor}
       />
-      <button
-        className={`${isRunning ? 'bg-slate-300' : 'bg-green-500'} px-4 py-3 rounded text-white cursor-pointer`}
-        disabled={isRunning}
-        onClick={(_) => runTestsClickHandler()}
-      >Run Tests</button>
-      <button>Reset</button>
       <OutputDisplay
         content={terminalOutput} />
+      <div>
+        <button
+          className={`${isRunning ? 'bg-slate-300' : 'bg-green-500'} px-4 py-3 rounded text-white cursor-pointer`}
+          disabled={isRunning}
+          onClick={(_) => runTestsClickHandler()}
+        >Run Tests</button>
+        <button>Reset</button>
+      </div>
     </>
   )
 }
