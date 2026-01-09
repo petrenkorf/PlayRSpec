@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./App.css";
 import { Editor } from "@monaco-editor/react";
 import "monaco-editor/esm/vs/editor/contrib/snippet/browser/snippetController2.js";
@@ -10,97 +10,93 @@ const { vm } = await DefaultRubyVM(module);
 
 vm.eval(`
   require "js"
-  # JS.global[:document].write "Hello, world!"
-  puts "Ruby WASM loaded"
+  require 'rspec'
 `);
 
-const defaultCode = `# Nothing to do here`;
-
 const defaultSpec = `RSpec.describe 'My First Spec' do 
-  it "is not correct" do 
-    expect(1+1).to eq(3)
+  1000.times do 
+    it "is not correct" do 
+      expect(1+1).to eq(2)
+    end
   end
-end
-`;
+end`;
 
-function App() {
+const App = () => {
+  const workerRef = useRef(null);
   const testEditor = useRef(null);
-  const codeEditor = useRef(null);
+  const [isRunning, setIsRunning] = useState(false);
 
-  const onEditorMount = (editor, monaco) => {
-    editor.onKeyDown((e) => {
-      if (e.keyCode !== monaco.KeyCode.Enter) return;
+  useEffect(() => {
+    const worker = new Worker(
+      new URL("./ruby.worker.js", import.meta.url),
+      { type: "module" }
+    );
 
-      const model = editor.getModel();
-      const pos = editor.getPosition();
-      if (!model || !pos) return;
+    workerRef.current = worker;
 
-      const line = model.getLineContent(pos.lineNumber);
+    worker.onmessage = (event) => {
+      const { type, result, message } = event.data;
 
-      const trimmed = line.trim();
-
-      if (trimmed === "" || trimmed.startsWith("#")) {
-        return;
+      if (type == 'READY') {
+        console.log('RUBY VM ready');
       }
 
-      const lineStartKeywords =
-        /^\s*(def|class|module|if|unless|case|while|until|begin)\b/;
+      if (type === 'DONE') {
+        setIsRunning(false);
+      }
 
-      const inlineDoKeyword = /\bdo\b(?!\s*end)/;
+      if (type == 'ERROR') {
+        console.error(message)
+      }
+    }
 
-      const opensBlock =
-        lineStartKeywords.test(line) || inlineDoKeyword.test(line);
+    return () => {
+      worker.terminate();
+    }
+  }, [])
 
-      if (!opensBlock) return;
+  const runTestsClickHandler = (_) => {
+    if (isRunning) return;
 
-      e.preventDefault();
-      e.stopPropagation();
+    setIsRunning(true);
 
-      queueMicrotask(() => {
-        const controller = editor.getContribution("snippetController2");
-        controller?.insert("\n  $0\nend");
-      });
-    });
-  };
+    workerRef.current.postMessage({
+      type: 'RUN',
+      spec: testEditor.current.getValue()
+    })
+  }
+
+  const onMountTestEditor = (editor) => {
+    testEditor.current = editor;
+  }
 
   return (
     <>
-      <Editor
-        ref={codeEditor}
-        height="50vh"
-        width="49vw"
-        theme="vs-dark"
-        defaultLanguage="ruby"
-        defaultValue={defaultCode}
-        options={{
-          minimap: { enabled: false },
-          tabSize: 2,
-          formatOnType: true,
-          insertSpaces: true,
-          autoIndent: "advanced",
-          scrollbar: { vertical: "hidden" },
-        }}
-        onMount={onEditorMount}
-      />
-      <Editor
-        ref={testEditor}
-        height="50vh"
-        width="49vw"
-        theme="vs-dark"
-        defaultLanguage="ruby"
-        defaultValue={defaultSpec}
-        options={{
-          minimap: { enabled: false },
-          tabSize: 2,
-          formatOnType: true,
-          insertSpaces: true,
-          autoIndent: "advanced",
-          scrollbar: { vertical: "hidden" },
-        }}
-        onMount={onEditorMount}
-      />
-      <button>Run Tests</button>
-      <button>Reset</button>
+      <div className="bg-zinc-800 size-full">
+        <Editor
+          ref={testEditor}
+          height="50vh"
+          width="49vw"
+          theme="vs-dark"
+          defaultLanguage="ruby"
+          defaultValue={defaultSpec}
+          options={{
+            minimap: { enabled: false },
+            tabSize: 2,
+            formatOnType: true,
+            insertSpaces: true,
+            autoIndent: "advanced",
+            scrollbar: { vertical: "hidden" },
+          }}
+          onMount={onMountTestEditor}
+        />
+        <button
+          className={`${isRunning ? 'bg-slate-300' : 'bg-green-500'} px-4 py-3 rounded text-white cursor-pointer`}
+          disabled={isRunning}
+          onClick={(_) => runTestsClickHandler()}
+        >Run Tests</button>
+        <button>Reset</button>
+      </div>
     </>
   );
 }
