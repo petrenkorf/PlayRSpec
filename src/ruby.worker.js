@@ -9,13 +9,23 @@ async function initVM() {
 
   vm = result.vm
 
-  globalThis.onRubyDone = (type, payload) => {
+  globalThis.onRubyDone = function (type, payload) {
+    alert('onRubyDone was called');
     self.postMessage({ type, payload } );
   };
 
   vm.eval(`
     require 'js'
     require 'rspec'
+    require 'stringio'
+    require 'json'
+
+    if RSpec::Core::ExampleGroup.const_defined?(:DEFAULT_FAILURE_NOTIFIER)
+      RSpec::Core::ExampleGroup.send(:remove_const, :DEFAULT_FAILURE_NOTIFIER)
+    end
+
+    RSpec::Core::ExampleGroup::DEFAULT_FAILURE_NOTIFIER =
+      proc { |_f, _o| }
   `);
 
   self.postMessage({type: 'READY'});
@@ -24,8 +34,6 @@ async function initVM() {
 initVM();
 
 self.onmessage = async (event) => {
-  console.log("WORKER RECEIVED:", event.data);
-
   const { type, spec } = event.data;
 
   if (!vm) {
@@ -36,26 +44,43 @@ self.onmessage = async (event) => {
   if (type == 'RUN') {
     try {
       const result = vm.eval(`
-        begin
+        code = <<~RUBY 
           RSpec.clear_examples 
           RSpec.reset
 
+          Object.send(:remove_const, :DEFAULT_FAILURE_NOTIFIER) rescue nil
           ${spec}
+          
 
-          runner = ::RSpec::Core::Runner.new(::RSpec.configuration)
-          result = runner.run_specs(::RSpec.world.ordered_example_groups)
+          output = StringIO.new
+          $stdout = output
+          $stderr = output
 
-          # JS.global[:onRubyDone].call('DONE', result)
-        rescue => e
-          # JS.global[:onRubyDone].call('ERROR', e.message)
-        end
+          config = RSpec.configuration
+          config.output_stream = output
+          config.error_stream  = output
+          config.full_backtrace = false
+
+          runner = ::RSpec::Core::Runner.new(config)
+          exit_code = runner.run_specs(::RSpec.world.ordered_example_groups)
+        
+          $stdout = STDOUT
+          $stderr = STDERR
+
+          JSON.generate({
+            exit_code: exit_code,
+            output: output.string
+          })
+        RUBY
+
+        eval(code, binding, "editor_spec.rb", 1)
       `)
 
-      console.log("RUN finished, result:", result);
+      const parsed_output = JSON.parse(result);
 
       self.postMessage({
         type: 'DONE',
-        result: Number(result)
+        result: parsed_output
       });
     } catch (err) {
       self.postMessage({

@@ -4,17 +4,37 @@ import { Editor } from "@monaco-editor/react";
 import "monaco-editor/esm/vs/editor/contrib/snippet/browser/snippetController2.js";
 
 const defaultSpec = `RSpec.describe 'My First Spec' do 
-  1000.times do 
-    it "is not correct" do 
-      expect(1+1).to eq(2)
-    end
+  it "is not correct" do 
+    expect(1+1).to eq(3)
+  end
+
+  it "is correct" do 
+    expect(1+1).to eq(2)
   end
 end`;
+
+const OutputDisplay = ({ content }) => {
+  let terminalColor = 'text-white';
+
+  if (content.exit_code == 1) {
+    terminalColor = 'text-red-500';
+  } else {
+    terminalColor = 'text-green-500';
+  }
+
+  return (
+    <div
+      className={"overflow-y-auto h-64 text-left whitespace-pre-wrap bg-zinc-900 w-full " + terminalColor} >
+      {content.output}
+    </div >
+  )
+}
 
 const App = () => {
   const workerRef = useRef(null);
   const testEditor = useRef(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [terminalOutput, setTerminalOutput] = useState("");
 
   useEffect(() => {
     const worker = new Worker(
@@ -32,6 +52,8 @@ const App = () => {
       }
 
       if (type === 'DONE') {
+        console.log(result);
+        setTerminalOutput(result)
         setIsRunning(false);
       }
 
@@ -78,6 +100,8 @@ const App = () => {
           }}
           onMount={onMountTestEditor}
         />
+        <OutputDisplay
+          content={terminalOutput} />
         <button
           className={`${isRunning ? 'bg-slate-300' : 'bg-green-500'} px-4 py-3 rounded text-white cursor-pointer`}
           disabled={isRunning}
