@@ -9,11 +9,6 @@ async function initVM() {
 
   vm = result.vm
 
-  globalThis.onRubyDone = function (type, payload) {
-    alert('onRubyDone was called');
-    self.postMessage({ type, payload } );
-  };
-
   vm.eval(`
     require 'js'
     require 'rspec'
