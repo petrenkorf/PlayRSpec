@@ -39,13 +39,10 @@ self.onmessage = async (event) => {
   if (type == 'RUN') {
     try {
       const result = vm.eval(`
+        RSpec.clear_examples 
+        RSpec.reset
         code = <<~RUBY 
-          RSpec.clear_examples 
-          RSpec.reset
-
-          Object.send(:remove_const, :DEFAULT_FAILURE_NOTIFIER) rescue nil
           ${spec}
-          
 
           output = StringIO.new
           $stdout = output

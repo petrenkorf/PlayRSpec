@@ -13,7 +13,7 @@ const OutputDisplay = ({ content }) => {
 
   return (
     <div
-      className={"overflow-y-auto h-64 text-left whitespace-pre-wrap bg-zinc-900 w-full " + terminalColor} >
+      className={"p-3 font-mono overflow-y-auto h-64 text-left whitespace-pre-wrap bg-zinc-900 w-full " + terminalColor} >
       {content.output}
     </div >
   )
