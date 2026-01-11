@@ -1,4 +1,6 @@
-import { DefaultRubyVM } from "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser/+esm";
+const { DefaultRubyVM } = await import(
+  "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser/+esm"
+);
 
 let vm; 
 
