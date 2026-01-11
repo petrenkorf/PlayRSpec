@@ -1,10 +1,9 @@
-const { DefaultRubyVM } = await import(
-  "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser/+esm"
-);
-
 let vm; 
 
 async function initVM() {
+  const { DefaultRubyVM } = await import(
+    "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser/+esm"
+  );
   const wasm = await fetch("/PlayRSpec/base.wasm");
   const module = await WebAssembly.compileStreaming(wasm);
   const result = await DefaultRubyVM(module);
