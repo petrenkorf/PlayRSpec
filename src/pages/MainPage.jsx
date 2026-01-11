@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const Home = () => {
+const MainPage = () => {
   return (
     <div>
       <span>List Exercises</span>
@@ -14,4 +14,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default MainPage;
