@@ -44,7 +44,7 @@ const CodeEditor = () => {
     workerRef.current = worker;
 
     worker.onmessage = (event) => {
-      const { type, result, message } = event.data;
+      const { type, result } = event.data;
 
       if (type == 'READY') {
         console.log('RUBY VM ready');
