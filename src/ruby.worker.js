@@ -78,7 +78,10 @@ self.onmessage = async (event) => {
     } catch (err) {
       self.postMessage({
         type: 'ERROR',
-        message: err.message
+        result: {
+          exit_code: 1,
+          output: err.message
+        }
       })
     }
   }

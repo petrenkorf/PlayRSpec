@@ -51,13 +51,13 @@ const CodeEditor = () => {
       }
 
       if (type === 'DONE') {
-        console.log(result);
         setTerminalOutput(result)
         setIsRunning(false);
       }
 
       if (type == 'ERROR') {
-        console.error(message)
+        setTerminalOutput(result);
+        setIsRunning(false);
       }
     }
 
