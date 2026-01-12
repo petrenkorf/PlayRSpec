@@ -8,9 +8,11 @@ const Exercise = () => {
   const lessonId = params.id - 1;
 
   return (
-    <div className="bg-[#171922] h-[100vh]">
-      <header className="text-white py-4">
-        <Link to="/">Back to Exercises</Link> <span>{lessons[lessonId].title}</span>
+    <div className="bg-[#171922] bg-zinc-600 h-[100vh]">
+      <header className="text-white p-4 border-b border-zinc-700 flex flex-row justify-between">
+        <Link to="/">Back to Exercises</Link>
+        <span className="italic">{lessons[lessonId].title}</span>
+        <p>Config</p>
       </header>
       <div className="size-full grid grid-cols-2 text-white">
         <div>
