@@ -75,6 +75,10 @@ const CodeEditor = () => {
     })
   }
 
+  const resetClickHandler = (_) => {
+    testEditor.current.setValue(defaultSpec);
+  }
+
   const onMountTestEditor = (editor) => {
     testEditor.current = editor;
   }
@@ -89,6 +93,7 @@ const CodeEditor = () => {
         defaultLanguage="ruby"
         defaultValue={defaultSpec}
         options={{
+          scrollBeyondLastLine: false,
           minimap: { enabled: false },
           tabSize: 2,
           formatOnType: true,
@@ -106,7 +111,10 @@ const CodeEditor = () => {
           disabled={isRunning}
           onClick={(_) => runTestsClickHandler()}
         >Run Tests</button>
-        <button>Reset</button>
+        <button
+          className="bg-slate-300 px-4 py-3 rounded text-black cursor-pointer"
+          onClick={resetClickHandler}
+        >Reset</button>
       </div>
     </>
   )

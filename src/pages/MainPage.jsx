@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom"
 import lessons from "../Lessons"
 
-const ExerciseCard = ({ id, title }) => {
+const ExerciseCard = ({ id, title, description }) => {
   return (
-    <Link to={`/exercise/${id}`}>
-      <div className="p-4 border border-slate-200 rounded-md w-[240px] h-[85px]">
-        {title}
+    <Link to={`/exercise/${id}`} className="text-white">
+      <div className="text-left bg-zinc-600 p-4 my-2 border border-zinc-600 rounded-md h-[85px]">
+        <p className="text-bold">{title}</p>
+        <p>{description}</p>
       </div>
     </Link>
   )
@@ -14,12 +15,10 @@ const ExerciseCard = ({ id, title }) => {
 const MainPage = () => {
   return (
     <div className="bg-zinc-800">
-      <span>List Exercises</span>
+      <span className="text-white">List Exercises</span>
 
-      <div className="grid grid-cols-3 max-w-[960px]">
-        {lessons.map((lesson) => (
-          <ExerciseCard key={lesson.id} {...lesson} />
-        ))}
+      <div className="grid grid-cols-1 max-w-[960px] m-auto">
+        {lessons.map((lesson) => (<ExerciseCard key={lesson.id} {...lesson} />))}
       </div>
     </div>
   )
