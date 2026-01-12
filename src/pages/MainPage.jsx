@@ -6,7 +6,7 @@ const ExerciseCard = ({ id, title, description, available }) => {
   const availability = id <= 15;
 
   return (
-    <Link to={`/exercise/${id}`} className={`text-white ${availability ? "" : "opacity-25"}`}>
+    <Link to={`/exercise/${id}`} className={`text-white ${availability ? "" : "opacity-25 cursor-auto"}`}>
       <div className="text-left bg-zinc-600 p-4 my-2 border border-zinc-600 rounded-md h-[85px]">
         <p className="font-bold">{id} - {title}</p>
         <p>{description}</p>
@@ -17,9 +17,8 @@ const ExerciseCard = ({ id, title, description, available }) => {
 
 const MainPage = () => {
   return (
-    <div className="bg-zinc-800">
-      <img src={logo} />
-      <span className="text-white">List Exercises</span>
+    <div className="bg-[#171922]">
+      <img src={logo} className="m-auto" />
 
       <div className="grid grid-cols-1 max-w-[960px] m-auto">
         {lessons.map((lesson) => (<ExerciseCard key={lesson.id} {...lesson} />))}
