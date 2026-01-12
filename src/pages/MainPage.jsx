@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom"
 import lessons from "../Lessons"
 
-const ExerciseCard = ({ id, title, description }) => {
+const ExerciseCard = ({ id, title, description, available }) => {
+  const availability = id <= 15;
+
+
   return (
-    <Link to={`/exercise/${id}`} className="text-white">
+    <Link to={`/exercise/${id}`} className={`text-white ${availability ? "" : "opacity-25"}`}>
       <div className="text-left bg-zinc-600 p-4 my-2 border border-zinc-600 rounded-md h-[85px]">
-        <p className="text-bold">{title}</p>
+        <p className="font-bold">{id} - {title}</p>
         <p>{description}</p>
       </div>
     </Link>
