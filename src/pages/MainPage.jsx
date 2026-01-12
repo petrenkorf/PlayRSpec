@@ -3,10 +3,14 @@ import lessons from "../Lessons"
 import logo from "../assets/PlayRSpec.png"
 
 const ExerciseCard = ({ id, title, description, available }) => {
-  const availability = id <= 15;
+  const isAvailable = id <= 15;
 
   return (
-    <Link to={`/exercise/${id}`} className={`text-white ${availability ? "" : "opacity-25 cursor-auto"}`}>
+    <Link
+      to={`/exercise/${id}`}
+      className={`text-white ${isAvailable ? "hover:y-[-5px]" : "opacity-25 cursor-auto"}`}
+      onClick={(e) => { if (!isAvailable) e.preventDefault() }}
+    >
       <div className="text-left bg-zinc-600 p-4 my-2 border border-zinc-600 rounded-md h-[85px]">
         <p className="font-bold">{id} - {title}</p>
         <p>{description}</p>
