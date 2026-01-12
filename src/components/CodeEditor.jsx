@@ -88,7 +88,7 @@ const CodeEditor = () => {
       <Editor
         ref={testEditor}
         height="50vh"
-        width="49vw"
+        width="50vw"
         theme="vs-dark"
         defaultLanguage="ruby"
         defaultValue={defaultSpec}
@@ -103,6 +103,7 @@ const CodeEditor = () => {
         }}
         onMount={onMountTestEditor}
       />
+      <p className="text-left">Output:</p>
       <OutputDisplay
         content={terminalOutput} />
       <div>
